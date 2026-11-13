@@ -1,0 +1,8 @@
+/api/products
+/api/products?limit=10
+/api/products/1
+/api/products/2
+/api/products/3
+/api/products/4
+/api/products/5
+/api/reports/sales?period=30d

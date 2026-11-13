@@ -1,0 +1,39 @@
+{
+  "name": "redis-api-caching-gateway",
+  "version": "1.0.0",
+  "description": "Redis caching gateway for slow APIs and database queries: drop-in reverse proxy, Express middleware and query cache with tag invalidation, stale-while-revalidate and request coalescing.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "bin": {
+    "rcg": "bin/rcg.js"
+  },
+  "engines": {
+    "node": ">=20.12"
+  },
+  "scripts": {
+    "start": "node bin/rcg.js serve",
+    "demo": "node bin/rcg.js demo",
+    "mock-api": "node bin/rcg.js mock-api",
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\""
+  },
+  "keywords": [
+    "redis",
+    "cache",
+    "api-gateway",
+    "reverse-proxy",
+    "express",
+    "performance"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^15.1.0",
+    "express": "^5.3.0",
+    "ioredis": "^5.11.1"
+  },
+  "devDependencies": {
+    "ioredis-mock": "^8.13.1"
+  }
+}

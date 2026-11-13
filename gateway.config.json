@@ -1,0 +1,102 @@
+{
+  "upstream": "http://localhost:4000",
+  "port": 8080,
+  "store": "auto",
+  "redis": {
+    "url": "env:REDIS_URL?",
+    "prefix": "rcg"
+  },
+  "adminToken": "env:CACHE_ADMIN_TOKEN?",
+  "trustProxy": false,
+  "cacheUnmatched": false,
+  "defaults": {
+    "ttl": 60,
+    "staleWhileRevalidate": 30,
+    "staleIfError": 600
+  },
+  "routes": [
+    {
+      "name": "products-list",
+      "path": "/api/products",
+      "ttl": 120,
+      "tags": [
+        "products"
+      ]
+    },
+    {
+      "name": "product",
+      "path": "/api/products/:id",
+      "ttl": 300,
+      "tags": [
+        "product:{id}"
+      ]
+    },
+    {
+      "name": "product-writes",
+      "path": "/api/products/:id?",
+      "methods": [
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE"
+      ],
+      "invalidates": [
+        "products",
+        "product:{id}"
+      ]
+    },
+    {
+      "name": "sales-report",
+      "path": "/api/reports/*",
+      "ttl": 900,
+      "staleWhileRevalidate": 300,
+      "tags": [
+        "reports"
+      ]
+    },
+    {
+      "name": "categories",
+      "path": "/api/categories",
+      "ttl": 3600,
+      "staleWhileRevalidate": 600,
+      "tags": [
+        "categories"
+      ]
+    },
+    {
+      "name": "my-profile",
+      "path": "/api/me",
+      "ttl": 30,
+      "private": true,
+      "varyBy": [
+        "header:authorization"
+      ]
+    },
+    {
+      "name": "no-cache-orders",
+      "path": "/api/orders/*",
+      "cache": false
+    },
+    {
+      "name": "search",
+      "path": "/api/search",
+      "ttl": 60,
+      "ignoreQuery": [
+        "utm_*",
+        "fbclid",
+        "gclid",
+        "sessionId"
+      ]
+    },
+    {
+      "name": "tenant-dashboard",
+      "path": "/api/dashboard",
+      "ttl": 120,
+      "private": true,
+      "varyBy": [
+        "header:x-tenant-id",
+        "header:authorization"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+# docker compose up -d                    -> gateway on :8080 in front of UPSTREAM_URL, with Redis
+# docker compose --profile demo up -d     -> also starts the slow demo API (upstream http://mock-api:4000)
+services:
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru", "--save", "", "--appendonly", "no"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  gateway:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      UPSTREAM_URL: ${UPSTREAM_URL:-http://mock-api:4000}
+      REDIS_URL: redis://redis:6379
+      CACHE_ADMIN_TOKEN: ${CACHE_ADMIN_TOKEN:?set CACHE_ADMIN_TOKEN in .env}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - ./gateway.config.json:/app/gateway.config.json:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  mock-api:
+    profiles: ["demo"]
+    build: .
+    command: ["node", "bin/rcg.js", "mock-api", "--port", "4000", "--latency", "350"]
+    ports:
+      - "4000:4000"
